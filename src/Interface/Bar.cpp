@@ -171,7 +171,7 @@ void Bar::setSecondValueOnTop(bool onTop)
 void Bar::draw()
 {
 	Surface::draw();
-	SDL_Rect square;
+	SDL_Rect square = {};
 
 	square.x = 0;
 	square.y = 0;

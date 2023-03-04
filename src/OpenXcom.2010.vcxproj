@@ -227,6 +227,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\libs\miniz\miniz.c" />
+    <ClCompile Include="Interface\BarR.cpp" />
     <ClCompile Include="Basescape\BaseInfoState.cpp" />
     <ClCompile Include="Basescape\BasescapeState.cpp" />
     <ClCompile Include="Basescape\BaseView.cpp" />
@@ -604,6 +605,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\libs\miniz\miniz.h" />
+    <ClInclude Include="Interface\BarR.h" />
     <ClInclude Include="Basescape\BaseInfoState.h" />
     <ClInclude Include="Basescape\BasescapeState.h" />
     <ClInclude Include="Basescape\BaseView.h" />

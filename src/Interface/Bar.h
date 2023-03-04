@@ -30,7 +30,7 @@ namespace OpenXcom
  */
 class Bar : public Surface
 {
-private:
+protected:
 	Uint8 _color, _color2, _borderColor;
 	double _scale, _max, _value, _value2;
 	bool _secondOnTop;
