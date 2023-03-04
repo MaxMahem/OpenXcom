@@ -1124,9 +1124,6 @@
     <ClCompile Include="Battlescape\ExtendedInventoryLinksState.cpp">
       <Filter>Battlescape</Filter>
     </ClCompile>
-    <ClCompile Include="Interface\BarR.cpp">
-      <Filter>Interface</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -2311,9 +2308,6 @@
     </ClInclude>
     <ClInclude Include="Battlescape\ExtendedInventoryLinksState.h">
       <Filter>Battlescape</Filter>
-    </ClInclude>
-    <ClInclude Include="Interface\BarR.h">
-      <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

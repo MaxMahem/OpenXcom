@@ -26,7 +26,6 @@
 #include "../Engine/LocalizedText.h"
 #include "../Engine/Options.h"
 #include "../Interface/Bar.h"
-#include "../Interface/BarR.h"
 #include "../Interface/TextButton.h"
 #include "../Interface/Text.h"
 #include "../Interface/TextEdit.h"
@@ -115,7 +114,7 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 
 	_txtHealth = new Text(120, 9, 6, yPos);
 	_numHealth = new Text(18, 9, 131, yPos);
-	_barHealth = new BarR(170, 7, 150, yPos);
+	_barHealth = new Bar(170, 7, 150, yPos);
 	yPos += step;
 
 	_txtBravery = new Text(120, 9, 6, yPos);
@@ -152,7 +151,7 @@ SoldierInfoState::SoldierInfoState(Base *base, size_t soldierId) : _base(base), 
 	{
 		_txtMana = new Text(120, 9, 6, yPos);
 		_numMana = new Text(18, 9, 131, yPos);
-		_barMana = new BarR(170, 7, 150, yPos);
+		_barMana = new Bar(170, 7, 150, yPos);
 		yPos += step;
 	}
 
@@ -440,8 +439,7 @@ void SoldierInfoState::init()
 
 	formatStat(current->tu, max.tu, withArmor.tu, initial->tu, _numTimeUnits, _barTimeUnits);
 	formatStat(current->stamina, max.stamina, withArmor.stamina, initial->stamina, _numStamina, _barStamina);
-	formatStat(current->health, max.health, withArmor.health, initial->health, _numHealth, _barHealth);
-	_barHealth->setReverseValue(_soldier->getHealthMissing());
+	formatStat(current->health, max.health, withArmor.health - _soldier->getHealthMissing(), initial->health, _numHealth, _barHealth);
 	formatStat(current->bravery, max.bravery, withArmor.bravery, initial->bravery, _numBravery, _barBravery);
 	formatStat(current->reactions, max.reactions, withArmor.reactions, initial->reactions, _numReactions, _barReactions);
 	formatStat(current->firing, max.firing, withArmor.firing, initial->firing, _numFiring, _barFiring);
@@ -521,8 +519,7 @@ void SoldierInfoState::init()
 	{
 		if (_game->getSavedGame()->isManaUnlocked(_game->getMod()))
 		{
-			formatStat(current->mana, max.mana, withArmor.mana, initial->mana, _numMana, _barMana);
-			_barMana->setReverseValue(_soldier->getHealthMissing());
+			formatStat(current->mana, max.mana, withArmor.mana - _soldier->getHealthMissing(), initial->mana, _numMana, _barMana);
 
 			_txtMana->setVisible(true);
 			_numMana->setVisible(true);

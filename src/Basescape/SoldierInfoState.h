@@ -29,7 +29,6 @@ class TextButton;
 class Text;
 class TextEdit;
 class Bar;
-class BarR;
 class Soldier;
 
 /**
@@ -53,8 +52,7 @@ private:
 
 	Text *_txtTimeUnits, *_txtStamina, *_txtHealth, *_txtBravery, *_txtReactions, *_txtFiring, *_txtThrowing, *_txtMelee, *_txtStrength, *_txtPsiStrength, *_txtPsiSkill, *_txtMana;
 	Text *_numTimeUnits, *_numStamina, *_numHealth, *_numBravery, *_numReactions, *_numFiring, *_numThrowing, *_numMelee, *_numStrength, *_numPsiStrength, *_numPsiSkill, *_numMana;
-	Bar *_barTimeUnits, *_barStamina, *_barBravery, *_barReactions, *_barFiring, *_barThrowing, *_barMelee, *_barStrength, *_barPsiStrength, *_barPsiSkill;
-	BarR *_barHealth, *_barMana;
+	Bar *_barTimeUnits, *_barStamina, *_barHealth, *_barBravery, *_barReactions, *_barFiring, *_barThrowing, *_barMelee, *_barStrength, *_barPsiStrength, *_barPsiSkill, *_barMana;
 
 public:
 	/// Creates the Soldier Info state.
