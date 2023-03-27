@@ -21,6 +21,7 @@
 #include "BattleUnit.h"
 #include "Tile.h"
 #include "SavedBattleGame.h"
+#include "../Battlescape/InventoryItemSprite.h"
 #include "../Mod/Mod.h"
 #include "../Mod/RuleItem.h"
 #include "../Mod/RuleSkill.h"
@@ -41,7 +42,11 @@ namespace OpenXcom
  * @param rules Pointer to ruleset.
  * @param id The id of the item.
  */
-BattleItem::BattleItem(const RuleItem *rules, int *id) : _id(*id), _rules(rules), _owner(0), _previousOwner(0), _unit(0), _tile(0), _inventorySlot(0), _inventoryX(0), _inventoryY(0), _ammoItem{ }, _fuseTimer(-1), _ammoQuantity(0), _painKiller(0), _heal(0), _stimulant(0), _XCOMProperty(false), _droppedOnAlienTurn(false), _isAmmo(false), _isWeaponWithAmmo(false), _fuseEnabled(false)
+BattleItem::BattleItem(const RuleItem *rules, int *id)
+	: _id(*id), _rules(rules), _owner(0), _previousOwner(0), _unit(0), _tile(0), _inventorySlot(0), _inventoryX(0), _inventoryY(0),
+	  _ammoItem{ }, _fuseTimer(-1), _ammoQuantity(0), _painKiller(0), _heal(0), _stimulant(0), _XCOMProperty(false), _droppedOnAlienTurn(false),
+	  _isAmmo(false), _isWeaponWithAmmo(false), _fuseEnabled(false),
+	  _invItemSprite(this)
 {
 	(*id)++;
 	if (_rules)
@@ -470,7 +475,6 @@ void BattleItem::spendHealingItemUse(BattleMediKitAction mediKitAction)
 	}
 }
 
-
 /**
  * Check if owner is removed from game.
  */
@@ -739,6 +743,11 @@ const Surface *BattleItem::getBigSprite(const SurfaceSet *set, const SavedBattle
 	{
 		return nullptr;
 	}
+}
+
+InventoryItemSprite& BattleItem::getInventoryItemSprite()
+{
+	return _invItemSprite;
 }
 
 /**

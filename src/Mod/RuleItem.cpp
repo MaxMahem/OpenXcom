@@ -2850,6 +2850,8 @@ void RuleItem::ScriptRegister(ScriptParserBase* parser)
 
 	ri.add<&RuleItem::getArmor>("getArmorValue");
 	ri.add<&RuleItem::getWeight>("getWeight");
+	ri.add<&RuleItem::getInventoryWidth>("getInvWidth", "Gets an items inventory width.");
+	ri.add<&RuleItem::getInventoryHeight>("getInvHeight", "Gets an items inventory height.");
 	ri.add<&getBattleTypeScript>("getBattleType");
 	ri.add<&RuleItem::getWaypoints>("getWaypoints");
 	ri.add<&RuleItem::isWaterOnly>("isWaterOnly");
