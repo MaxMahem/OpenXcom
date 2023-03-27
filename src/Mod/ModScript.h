@@ -181,6 +181,14 @@ class ModScript
 	{
 		SelectItemParser(ScriptGlobal* shared, const std::string& name, Mod* mod);
 	};
+	struct InventorySpriteOverlayParser : ScriptParserEvents<ScriptOutputArgs<>, const BattleItem*, const SavedBattleGame*, Surface*, int>
+	{
+		InventorySpriteOverlayParser(ScriptGlobal* shared, const std::string& name, Mod* mod);
+	};
+	struct HandOverlayParser : ScriptParserEvents<ScriptOutputArgs<>, const BattleItem*, const SavedBattleGame*, Surface*, int>
+	{
+		HandOverlayParser(ScriptGlobal* shared, const std::string& name, Mod* mod);
+	};
 
 	struct TryPsiAttackItemParser : ScriptParserEvents<ScriptOutputArgs<int&>, const BattleItem*, const BattleUnit*, const BattleUnit*, const RuleSkill*, int, int, int, RNG::RandomState*, int, int, const SavedBattleGame*>
 	{
@@ -319,6 +327,8 @@ public:
 
 	using RecolorItemSprite = MACRO_NAMED_SCRIPT("recolorItemSprite", RecolorItemParser);
 	using SelectItemSprite = MACRO_NAMED_SCRIPT("selectItemSprite", SelectItemParser);
+	using InventorySpriteOverlay = MACRO_NAMED_SCRIPT("inventorySpriteOverlay", InventorySpriteOverlayParser);
+	using HandOverlay = MACRO_NAMED_SCRIPT("handOverlay", HandOverlayParser);
 
 	using ReactionWeaponAction = MACRO_NAMED_SCRIPT("reactionWeaponAction", ReactionUnitParser);
 
@@ -420,6 +430,8 @@ public:
 	using BattleItemScripts = ScriptGroup<Mod,
 		RecolorItemSprite,
 		SelectItemSprite,
+		InventorySpriteOverlay,
+		HandOverlay,
 
 		ReactionWeaponAction,
 

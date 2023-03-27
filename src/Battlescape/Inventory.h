@@ -41,8 +41,10 @@ class Inventory : public InteractiveSurface
 {
 private:
 	Game *_game;
-	Surface *_grid, *_items, *_gridLabels, *_selection;
-	Uint8 _twoHandedRed, _twoHandedGreen;
+	Surface *_grid, *_items, *_gridLabels;
+	/// surface for the currently select item, if any. Equal in size to a hand-slot.
+	Surface *_selection;
+
 	WarningMessage *_warning;
 	BattleUnit *_selUnit;
 	BattleItem *_selItem;
@@ -51,7 +53,6 @@ private:
 	int _groundOffset, _animFrame;
 	std::map<int, std::map<int, int> > _stackLevel;
 	std::vector<std::vector<char>> _occupiedSlotsCache;
-	Surface *_stunIndicator, *_woundIndicator, *_burnIndicator, *_shockIndicator;
 	NumberText *_stackNumber;
 	std::string _searchString;
 	Timer *_animTimer;

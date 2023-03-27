@@ -31,6 +31,7 @@
 #include "../Mod/RuleInterface.h"
 #include "../Savegame/BattleUnit.h"
 #include "../Savegame/SavedGame.h"
+#include "../Savegame/SavedBattleGame.h"
 #include "../Ufopaedia/Ufopaedia.h"
 
 namespace OpenXcom
@@ -180,6 +181,11 @@ void AlienInventory::drawItems()
 
 				BattleItem::ScriptFill(&work, item, save, BODYPART_ITEM_INVENTORY, _animFrame, 0);
 				work.executeBlit(frame, _items, x, y, 0);
+
+				auto overlay = Surface(frame->getWidth(), frame->getHeight());
+				overlay.setPalette(getPalette());
+				ModScript::scriptCallback<ModScript::InventorySpriteOverlay>(item->getRules(), item, save, &overlay, _animFrame);
+				overlay.blitNShade(_items, x, y);
 			}
 			else
 			{

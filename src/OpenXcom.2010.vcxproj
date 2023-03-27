@@ -447,6 +447,7 @@
     <ClCompile Include="Interface\TextList.cpp" />
     <ClCompile Include="Interface\ToggleTextButton.cpp" />
     <ClCompile Include="Interface\Window.cpp" />
+    <ClCompile Include="Battlescape\InventoryItemSprite.cpp" />
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="md5.cpp" />
@@ -486,6 +487,7 @@
     <ClCompile Include="Menu\TestPaletteState.cpp" />
     <ClCompile Include="Menu\TestState.cpp" />
     <ClCompile Include="Menu\VideoState.cpp" />
+    <ClCompile Include="Mod\ModScript.cpp" />
     <ClCompile Include="Mod\CustomPalettes.cpp" />
     <ClCompile Include="Mod\RuleArcScript.cpp" />
     <ClCompile Include="Mod\RuleDamageType.cpp" />
@@ -841,6 +843,7 @@
     <ClInclude Include="Interface\TextList.h" />
     <ClInclude Include="Interface\ToggleTextButton.h" />
     <ClInclude Include="Interface\Window.h" />
+    <ClInclude Include="Battlescape\InventoryItemSprite.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="Menu\AbandonGameState.h" />
