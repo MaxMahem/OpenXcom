@@ -19,6 +19,7 @@
  */
 #include <sstream>
 #include <string>
+#include <unordered_set>
 #include "CrossPlatform.h"
 
 namespace OpenXcom
@@ -49,23 +50,71 @@ class Logger
 {
 public:
 	Logger() : _level(LOG_INFO) { };
-	virtual ~Logger() { CrossPlatform::log(_level, os); };
-	std::ostringstream& get(SeverityLevel level = LOG_INFO) { _level = level; return os; };
 
+	// no copy or moves.
+	Logger(const Logger&) = delete;
+	Logger& operator=(const Logger&) = delete;
+
+	/// When this class is destroyed, logging happens.
+	 ~Logger() { CrossPlatform::log(_level, _message); };
+
+	/// Return access to the ostringstream for logging.
+	std::ostringstream& get(SeverityLevel level = LOG_INFO) { _level = level; return _message; };
+
+	/// Set the logging level.
 	static SeverityLevel& reportingLevel() {
 		static SeverityLevel reportingLevel = LOG_UNCENSORED;
 		return reportingLevel;
 	};
+
+	/// Translates the logging level to a string.
 	static const std::string& toString(int level) {
 		static const std::string buffer[] = { "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "VERB", "ALL" };
 		return buffer[level];
 	};
 private:
-	Logger(const Logger&);
 	SeverityLevel _level;
-	std::ostringstream os;
+	std::ostringstream _message;
 };
 
-#define Log(level) if (level > Logger::reportingLevel()) { } else Logger().get(level)
+/**
+ * @brief Variation of the logging class that logs a message only once, as determined by a unique key.
+ */
+class LoggerOnce
+{
+ public:
+	/// Construct a new instance.
+	LoggerOnce() : _level(LOG_INFO){};
+
+	// No copy or moves.
+	LoggerOnce(const LoggerOnce&) = delete;
+	LoggerOnce& operator=(const LoggerOnce&) = delete;
+
+	/// When this class is destroyed, logging happens, but only if the message is unique.
+	~LoggerOnce()
+	{
+		if (_uniqueMessage)
+		{
+			CrossPlatform::log(_level, _os);
+		}
+	};
+
+	/// Return access to the ostringstream for logging.
+	std::ostringstream& get(std::string key, SeverityLevel level = LOG_INFO)
+	{
+		_level = level;
+		_uniqueMessage = _seenMessages.insert(key).second;
+		return _os;
+	};
+
+ private:
+	SeverityLevel _level;
+	std::ostringstream _os;
+	inline static std::unordered_set<std::string> _seenMessages{};
+	bool _uniqueMessage = false;
+};
+
+#define Log(level)          if (level > Logger::reportingLevel()) { } else Logger().get(level)
+#define LogOnce(level, key) if (level > Logger::reportingLevel()) { } else LoggerOnce().get(key, level)
 
 }

@@ -2028,6 +2028,8 @@ interfaces:
       - id: numStack
         color: 66
         color2: 32
+      - id: fatalWounds
+        color: 32
   - type: stats
     elements:
       - id: textName

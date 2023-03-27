@@ -18,6 +18,7 @@
  * along with OpenXcom.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <yaml-cpp/yaml.h>
+#include "../Battlescape/InventoryItemSprite.h"
 #include "../Mod/RuleItem.h"
 #include "../Engine/Script.h"
 
@@ -64,6 +65,8 @@ private:
 	const RuleItemAction *_confSnap = nullptr;
 	const RuleItemAction *_confAuto = nullptr;
 	const RuleItemAction *_confMelee = nullptr;
+	/// object for handling drawing this item.
+	InventoryItemSprite _invItemSprite;
 	ScriptValues<BattleItem> _scriptValues;
 
 public:
@@ -149,6 +152,8 @@ public:
 	const Surface *getFloorSprite(const SurfaceSet *set, const SavedBattleGame *save, int animFrame, int shade) const;
 	/// Gets the item's inventory sprite.
 	const Surface *getBigSprite(const SurfaceSet *set, const SavedBattleGame *save, int animFrame) const;
+	/// Gets the inventoryItemSprite for drawing this item.
+	InventoryItemSprite& getInventoryItemSprite();
 
 	/// Check if item can use any ammo.
 	bool isWeaponWithAmmo() const;

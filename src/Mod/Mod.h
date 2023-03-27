@@ -157,8 +157,10 @@ private:
 
 	std::map<std::string, Palette*> _palettes;
 	std::map<std::string, Font*> _fonts;
-	std::map<std::string, Surface*> _surfaces;
-	std::map<std::string, SurfaceSet*> _sets;
+	/// map of single sprites. Possibly lazy loaded.
+	mutable std::map<std::string, Surface*> _surfaces;
+	/// map of sets of sprites (BIGOBS, FLOROBS, ect). Possibly lazy loaded.
+	mutable std::map<std::string, SurfaceSet*> _sets;
 	std::map<std::string, SoundSet*> _sounds;
 	std::map<std::string, Music*> _musics;
 	std::vector<Uint16> _voxelData;
@@ -202,6 +204,7 @@ private:
 	std::map<std::string, RuleEventScript*> _eventScripts;
 	std::map<std::string, RuleEvent*> _events;
 	std::map<std::string, RuleMissionScript*> _missionScripts;
+	/// Map of extra sprites defined in mod ExtraSprites section.
 	std::map<std::string, std::vector<ExtraSprites *> > _extraSprites;
 	std::map<std::string, CustomPalettes *> _customPalettes;
 	std::vector<std::pair<std::string, ExtraSounds *> > _extraSounds;
@@ -369,9 +372,9 @@ private:
 	/// Loads resources from extra rulesets.
 	void loadExtraResources();
 	/// Loads surfaces on demand.
-	void lazyLoadSurface(const std::string &name);
+	void lazyLoadSurface(const std::string &name) const;
 	/// Loads an external sprite.
-	void loadExtraSprite(ExtraSprites *spritePack);
+	void loadExtraSprite(ExtraSprites *spritePack) const;
 	/// Applies mods to vanilla resources.
 	void modResources();
 	/// Sorts all our lists according to their weight.
@@ -453,9 +456,9 @@ public:
 	/// Gets a particular font.
 	Font *getFont(const std::string &name, bool error = true) const;
 	/// Gets a particular surface.
-	Surface *getSurface(const std::string &name, bool error = true);
+	Surface *getSurface(const std::string &name, bool error = true) const;
 	/// Gets a particular surface set.
-	SurfaceSet *getSurfaceSet(const std::string &name, bool error = true);
+	SurfaceSet *getSurfaceSet(const std::string &name, bool error = true) const;
 	/// Gets a particular music.
 	Music *getMusic(const std::string &name, bool error = true) const;
 	/// Gets the available music tracks.
