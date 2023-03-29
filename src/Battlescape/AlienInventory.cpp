@@ -33,6 +33,7 @@
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/SavedBattleGame.h"
 #include "../Ufopaedia/Ufopaedia.h"
+#include "InventoryItemSprite.h"
 
 namespace OpenXcom
 {
@@ -159,38 +160,33 @@ void AlienInventory::drawItems()
 	_items->clear();
 	if (_selUnit != 0)
 	{
-		SurfaceSet *texture = _game->getMod()->getSurfaceSet("BIGOBS.PCK");
+		SurfaceSet* surfaceSet = _game->getMod()->getSurfaceSet("BIGOBS.PCK");
 		for (const auto* item : *_selUnit->getInventory())
 		{
-			if (item->getSlot()->getType() == INV_HAND)
-			{
-				const Surface* frame = item->getBigSprite(texture, save, _animFrame);
-
-				if (!frame)
-					continue;
-
-				int x = item->getSlot()->getX() + item->getRules()->getHandSpriteOffX();
-				x += _game->getMod()->getAlienInventoryOffsetX();
-
-				if (item->getSlot()->isRightHand())
-					x -= _dynamicOffset;
-				else if (item->getSlot()->isLeftHand())
-					x += _dynamicOffset;
-
-				int y = item->getSlot()->getY() + item->getRules()->getHandSpriteOffY();
-
-				BattleItem::ScriptFill(&work, item, save, BODYPART_ITEM_INVENTORY, _animFrame, 0);
-				work.executeBlit(frame, _items, x, y, 0);
-
-				auto overlay = Surface(frame->getWidth(), frame->getHeight());
-				overlay.setPalette(getPalette());
-				ModScript::scriptCallback<ModScript::InventorySpriteOverlay>(item->getRules(), item, save, &overlay, _animFrame);
-				overlay.blitNShade(_items, x, y);
-			}
-			else
+			if (item->getSlot()->getType() != INV_HAND)
 			{
 				continue;
 			}
+
+			const auto handSlot = item->getSlot();
+			SDL_Rect spriteBounds = item->getInvSpriteBounds();
+			spriteBounds.x += handSlot->getX() + _game->getMod()->getAlienInventoryOffsetX();
+			spriteBounds.y += handSlot->getY();
+
+			// offset bounds by dynamic offset to account for large aliens. 
+			spriteBounds.x -= (handSlot->isRightHand() ? -_dynamicOffset :
+							   handSlot->isLeftHand()  ? _dynamicOffset  :
+							   throw std::logic_error("Item in hand slot with bad hand value."));
+			SDL_Rect handSlotBounds = SDL_Rect{
+				static_cast<Sint16>(handSlot->getX() + 1 + _game->getMod()->getAlienInventoryOffsetX()),
+				static_cast<Sint16>(handSlot->getY() + 1),
+				(RuleInventory::HAND_W * RuleInventory::SLOT_W) - 1,
+				(RuleInventory::HAND_H * RuleInventory::SLOT_H) - 2,
+			};
+			
+			InventoryItemSprite(*item, *_items, spriteBounds).draw(*surfaceSet, *save, _animFrame);
+			InventoryItemOverlay(*item, *_items, spriteBounds, InventoryItemOverlay::ALIEN_INV_HAND).draw(*save, _animFrame);
+			InventoryItemOverlay(*item, *_items, handSlotBounds, InventoryItemOverlay::ALIEN_INV_HAND).drawHandOverlay(*save, _animFrame);
 		}
 	}
 }

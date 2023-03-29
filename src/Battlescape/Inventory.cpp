@@ -47,6 +47,7 @@
 #include "../Engine/Screen.h"
 #include "../Engine/CrossPlatform.h"
 #include "TileEngine.h"
+#include "InventoryItemSprite.h"
 
 namespace OpenXcom
 {
@@ -67,6 +68,7 @@ Inventory::Inventory(Game *game, int width, int height, int x, int y, bool base)
 	_items = new Surface(width, height, 0, 0);
 	_gridLabels = new Surface(width, height, 0, 0);
 	_selection = new Surface(RuleInventory::HAND_W * RuleInventory::SLOT_W, RuleInventory::HAND_H * RuleInventory::SLOT_H, x, y);
+	_bigObs = _game->getMod()->getSurfaceSet("BIGOBS.PCK");
 	_warning = new WarningMessage(224, 24, 48, 176);
 	_stackNumber = new NumberText(15, 15, 0, 0);
 	_stackNumber->setBordered(true);
@@ -301,7 +303,7 @@ void Inventory::drawItems()
 	if (_selUnit != 0)
 	{
 		// Soldier items
-		for (auto* invItem : *_selUnit->getInventory())
+		for (const auto* invItem : *_selUnit->getInventory())
 		{
 			// if the item is selected (grabbed by the cursor) continue. It isn't handled here.
 			if (invItem == _selItem)
@@ -309,7 +311,28 @@ void Inventory::drawItems()
 				continue;
 			}
 
-			invItem->getInventoryItemSprite().draw(*_items, save, _animFrame);
+			const auto itemSlot = invItem->getSlot();
+			SDL_Rect spriteBounds = invItem->getInvSpriteBounds();
+			spriteBounds.x += itemSlot->getX();
+			spriteBounds.y += itemSlot->getY();
+
+			InventoryItemSprite(*invItem, *_items, spriteBounds).draw(*_bigObs, *save, _animFrame);
+
+			if (invItem->getSlot()->getType() == INV_HAND)
+			{
+				SDL_Rect handSlotBounds = SDL_Rect{
+					static_cast<Sint16>(itemSlot->getX() + 1),
+					static_cast<Sint16>(itemSlot->getY() + 1),
+					(RuleInventory::HAND_W * RuleInventory::SLOT_W) - 1,
+					(RuleInventory::HAND_H * RuleInventory::SLOT_H) - 2,
+				};
+				InventoryItemOverlay(*invItem, *_items, spriteBounds, InventoryItemOverlay::INVENTORY_HAND).draw(*save, _animFrame);
+				InventoryItemOverlay(*invItem, *_items, handSlotBounds, InventoryItemOverlay::INVENTORY_HAND).drawHandOverlay(*save, _animFrame);
+			}
+			else // not hand slot
+			{
+				InventoryItemOverlay(*invItem, *_items, spriteBounds, InventoryItemOverlay::INVENTORY_SLOT).draw(*save, _animFrame);
+			}
 		}
 
 		Surface stackLayer(getWidth(), getHeight(), 0, 0);
@@ -317,9 +340,9 @@ void Inventory::drawItems()
 
 		// Ground items
 		auto& occupiedSlots = *clearOccupiedSlotsCache();
-		for (auto* groundItem : *_selUnit->getTile()->getInventory())
+		for (const auto* groundItem : *_selUnit->getTile()->getInventory())
 		{
-			auto rules = groundItem->getRules();
+			const auto rules = groundItem->getRules();
 			// ground items can have more potentially valid states that need to be filtered.
 			if (groundItem == _selItem                                                 // selected item not handled here.
 				|| rules->getInventoryHeight() == 0 || rules->getInventoryWidth() == 0 // items with no width or height also filtered (tank corpses)
@@ -341,7 +364,12 @@ void Inventory::drawItems()
 				pos = true;
 			}
 
-			groundItem->getInventoryItemSprite().draw(*_items, save, _animFrame, _groundOffset);
+			const auto itemSlot = groundItem->getSlot();
+			SDL_Rect spriteBounds = groundItem->getInvSpriteBounds();
+			spriteBounds.x += itemSlot->getX();
+			spriteBounds.y += itemSlot->getY();
+			InventoryItemSprite(*groundItem, *_items, spriteBounds).draw(*_bigObs, *save, _animFrame);
+			InventoryItemOverlay(*groundItem, *_items, spriteBounds, InventoryItemOverlay::INVENTORY_GRND).draw(*save, _animFrame);
 
 			// item stacking
 			if (_stackLevel[groundItem->getSlotX()][groundItem->getSlotY()] > 1)
@@ -370,7 +398,10 @@ void Inventory::drawSelectedItem()
 	if (_selItem)
 	{
 		_selection->clear();
-		_selItem->getRules()->drawHandSprite(_game->getMod()->getSurfaceSet("BIGOBS.PCK"), _selection, _selItem, _game->getSavedGame()->getSavedBattle(), _animFrame);
+		SDL_Rect bounds = _selItem->getHandCenteredSpriteBounds();
+		const auto save = _game->getSavedGame()->getSavedBattle();
+		InventoryItemSprite(*_selItem, *_selection, bounds).draw(*_bigObs, *save, _animFrame);
+		InventoryItemOverlay(*_selItem, *_selection, bounds, InventoryItemOverlay::INVENTORY_AMMO).draw(*save, _animFrame);
 	}
 }
 

@@ -96,6 +96,7 @@ StartState::StartState() : _anim(0)
 
 	if (Options::reload)
 	{
+		Logger::resetSeenMessages(); // clear out old messages.
 		if (Options::oxceStartUpTextMode < 2)
 		{
 			addLine("Restarting...");

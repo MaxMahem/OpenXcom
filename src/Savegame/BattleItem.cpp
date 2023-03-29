@@ -21,7 +21,6 @@
 #include "BattleUnit.h"
 #include "Tile.h"
 #include "SavedBattleGame.h"
-#include "../Battlescape/InventoryItemSprite.h"
 #include "../Mod/Mod.h"
 #include "../Mod/RuleItem.h"
 #include "../Mod/RuleSkill.h"
@@ -45,8 +44,7 @@ namespace OpenXcom
 BattleItem::BattleItem(const RuleItem *rules, int *id)
 	: _id(*id), _rules(rules), _owner(0), _previousOwner(0), _unit(0), _tile(0), _inventorySlot(0), _inventoryX(0), _inventoryY(0),
 	  _ammoItem{ }, _fuseTimer(-1), _ammoQuantity(0), _painKiller(0), _heal(0), _stimulant(0), _XCOMProperty(false), _droppedOnAlienTurn(false),
-	  _isAmmo(false), _isWeaponWithAmmo(false), _fuseEnabled(false),
-	  _invItemSprite(this)
+	  _isAmmo(false), _isWeaponWithAmmo(false), _fuseEnabled(false)
 {
 	(*id)++;
 	if (_rules)
@@ -605,7 +603,7 @@ int BattleItem::getMoveToCost(const RuleInventory *slot) const
 }
 
 /**
- * Sets the item's inventory slot.
+ * Sets the item's inventory slot and position.
  * @param slot The slot id.
  */
 void BattleItem::setSlot(const RuleInventory *slot)
@@ -745,9 +743,68 @@ const Surface *BattleItem::getBigSprite(const SurfaceSet *set, const SavedBattle
 	}
 }
 
-InventoryItemSprite& BattleItem::getInventoryItemSprite()
+/**
+ * @brief Gets the items inventory sprite bounds, taking into account the items position within it's container,
+ * but not the position of the container (the boundary is relative to the container).
+ * @param groundOffset The number of inventory units the ground container is offsest from 0, if any.
+ * @return A rectangle that describes the inventory sprite's bounds within it's container.
+*/
+const SDL_Rect BattleItem::getInvSpriteBounds(int groundOffset) const
 {
-	return _invItemSprite;
+	// item dimensions in inventory units.
+	int invSlotW = _rules->getInventoryWidth();
+	int invSlotH = _rules->getInventoryHeight();
+
+	// sprite bounding dimensions in pixels.
+	Uint16 itemW = invSlotW * RuleInventory::SLOT_W;
+	Uint16 itemH = invSlotH * RuleInventory::SLOT_H;
+
+	// determine the amount the box needs to be offset according to
+	Sint16 itemX, itemY;
+	switch (_inventorySlot->getType())
+	{
+	case INV_SLOT:
+		// position item by place in inventory container * slot size.
+		itemX = _inventoryX * RuleInventory::SLOT_W;
+		itemY = _inventoryY * RuleInventory::SLOT_H;
+		break;
+	case INV_HAND:
+		// position item by half the difference in item size and hand slot size in order to center.
+		itemX = (RuleInventory::HAND_W - invSlotW) * RuleInventory::SLOT_W / 2;
+		itemY = (RuleInventory::HAND_H - invSlotH) * RuleInventory::SLOT_H / 2;
+		break;
+	case INV_GROUND:
+		// position by place in the ground container, after taking into account the ground offset (in inventory units)
+		itemX = (_inventoryX - groundOffset) * RuleInventory::SLOT_W;
+		itemY =  _inventoryY * RuleInventory::SLOT_H;
+		break;
+	default:
+		throw std::logic_error("Item in unit inventory with bad enum value for slotType: " + std::to_string(_inventorySlot->getType()));
+	}
+
+	return SDL_Rect{itemX, itemY, itemW, itemH};
+}
+
+/**
+ * @brief Gets the items inventory sprite bounds, assuming that it is to be centered in a hand-slot sized container.
+ * The position of the container is not considered (it is relative to the container position).
+ * @return A rectangle that describes the inventory sprite's bounds within a hand-slot sized container.
+*/
+const SDL_Rect BattleItem::getHandCenteredSpriteBounds() const
+{
+	// item dimensions in inventory units.
+	int invSlotW = _rules->getInventoryWidth();
+	int invSlotH = _rules->getInventoryHeight();
+
+	// sprite bounding dimensions in pixels.
+	Uint16 itemW = invSlotW * RuleInventory::SLOT_W;
+	Uint16 itemH = invSlotH * RuleInventory::SLOT_H;
+
+	// position item by half the difference in item size and hand slot size in order to center.
+	Sint16 itemX = (RuleInventory::HAND_W - invSlotW) * RuleInventory::SLOT_W / 2;
+	Sint16 itemY = (RuleInventory::HAND_H - invSlotH) * RuleInventory::SLOT_H / 2;
+
+	return SDL_Rect{itemX, itemY, itemW, itemH};
 }
 
 /**

@@ -22,6 +22,7 @@
 #include "InventoryPersonalState.h"
 #include <algorithm>
 #include "Inventory.h"
+#include "InventoryItemSprite.h"
 #include "../Basescape/SoldierArmorState.h"
 #include "../Basescape/SoldierAvatarState.h"
 #include "../Engine/Game.h"
@@ -2088,7 +2089,12 @@ void InventoryState::think()
 			r.w -= 2;
 			r.h -= 2;
 			_selAmmo->drawRect(&r, Palette::blockOffset(0)+15);
-			firstAmmo->getRules()->drawHandSprite(_game->getMod()->getSurfaceSet("BIGOBS.PCK"), _selAmmo, firstAmmo, _game->getSavedGame()->getSavedBattle(), anim);
+
+			SDL_Rect handCenteredSpriteBounds = firstAmmo->getHandCenteredSpriteBounds();
+			auto invItemSprite = InventoryItemSprite(*firstAmmo, *_selAmmo, handCenteredSpriteBounds);
+			auto invItemSpriteOverlay = InventoryItemOverlay(*firstAmmo, *_selAmmo, handCenteredSpriteBounds, InventoryItemOverlay::INVENTORY_AMMO);
+			invItemSprite.draw(*_game->getMod()->getSurfaceSet("BIGOBS.PCK"), *_game->getSavedGame()->getSavedBattle(), anim);
+			invItemSpriteOverlay.draw(*_game->getSavedGame()->getSavedBattle(), anim);
 		}
 		else
 		{

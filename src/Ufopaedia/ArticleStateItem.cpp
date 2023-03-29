@@ -176,9 +176,7 @@ namespace OpenXcom
 		// IMAGE
 		_image = new Surface(32, 48, 157, 5);
 		add(_image);
-
 		item->drawHandSprite(_game->getMod()->getSurfaceSet("BIGOBS.PCK"), _image);
-
 
 		int ammoSlot = defs->getAmmoSlotForPage(_state->current_page);
 		int ammoSlotPrevUsage = defs->getAmmoSlotPrevUsageForPage(_state->current_page);
