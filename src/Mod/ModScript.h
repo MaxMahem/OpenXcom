@@ -54,6 +54,7 @@ class Mod;
 class BattleUnit;
 class BattleUnitVisibility;
 class BattleItem;
+class InventoryItemOverlay;
 struct StatAdjustment;
 
 class Ufo;
@@ -181,11 +182,11 @@ class ModScript
 	{
 		SelectItemParser(ScriptGlobal* shared, const std::string& name, Mod* mod);
 	};
-	struct InventorySpriteOverlayParser : ScriptParserEvents<ScriptOutputArgs<>, const BattleItem*, const SavedBattleGame*, Surface*, int>
+	struct InventorySpriteOverlayParser : ScriptParserEvents<ScriptOutputArgs<>, const BattleItem*, const SavedBattleGame*, InventoryItemOverlay*, int>
 	{
 		InventorySpriteOverlayParser(ScriptGlobal* shared, const std::string& name, Mod* mod);
 	};
-	struct HandOverlayParser : ScriptParserEvents<ScriptOutputArgs<>, const BattleItem*, const SavedBattleGame*, Surface*, int>
+	struct HandOverlayParser : ScriptParserEvents<ScriptOutputArgs<>, const BattleItem*, const SavedBattleGame*, InventoryItemOverlay*, int>
 	{
 		HandOverlayParser(ScriptGlobal* shared, const std::string& name, Mod* mod);
 	};

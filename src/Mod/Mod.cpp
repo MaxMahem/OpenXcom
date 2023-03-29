@@ -763,7 +763,7 @@ T* Mod::getRule(const std::string& id, const std::string& name, const std::map<s
 		throw Exception(name + " " + id + " not found");
 	}
 
-	LogOnce(LOG_WARNING, name+id) << "\"" << name << "\" rule identified by \"" << id << "\" not found";
+	LogOnce("getRule" + name + id, LOG_WARNING) << "\"" << name << "\" rule identified by \"" << id << "\" not found";
 	return 0;
 }
 
@@ -6324,70 +6324,6 @@ void getInventoryScript(const Mod* mod, const RuleInventory* &inv, const std::st
 	}
 }
 
-//// Surface bindings
-void blitNShadeNRecolorSpriteScript(Surface* dest, const Surface* source, int x, int y, int shade, int newColor);
-
-void blitSpriteScript(Surface* dest, const Surface* source, int x, int y)
-{
-	source->blitNShade(dest, x, y, 0, false, 0);
-}
-void blitNShadeSpriteScript(Surface* dest, const Surface* source, int x, int y, int shade)
-{
-	source->blitNShade(dest, x, y, shade, false, 0);
-}
-void blitNShadeNRecolorSpriteScript(Surface* dest, const Surface* source, int x, int y, int shade, int newColor)
-{
-	source->blitNShade(dest, x, y, shade, false, newColor);
-}
-
-void drawTextScript(Surface* surf, const std::string& text, int width, int height, int x, int y, int color)
-{
-	auto surfaceText = Text(width, height, x, y);
-	surfaceText.setPalette(surf->getPalette());
-	surfaceText.setColor(color);
-	surfaceText.blitNShade(surf, x, y);
-	// surf->drawString(x, y, text.c_str(), color);
-}
-
-void drawNumberScript(Surface* surf, int value, int width, int height, int x, int y, int color)
-{
-	NumberText text = NumberText(width, height, x, y);
-	text.setPalette(surf->getPalette());
-	text.setColor(color);
-	text.setBordered(false);
-	text.setValue(value);
-	text.blit(surf->getSurface());
-}
-
-void drawLineScript(Surface* surf, int x1, int y1, int x2, int y2, int color)
-{
-	surf->drawLine(x1, y1, x2, y2, color);
-}
-void drawRectScript(Surface* surf, int x1, int y1, int x2, int y2, int color)
-{
-	surf->drawRect(x1, y1, x2, y2, color);
-}
-void drawCircScript(Surface* surf, int x, int y, int radius, int color)
-{
-	surf->drawCircle(x, y, radius, color);
-}
-
-std::string debugDisplayScript(const Surface* surf)
-{
-	if (surf)
-	{
-		std::string output;
-		output += "Surface";
-		output += " (width: " + std::to_string(surf->getWidth()) + " height: " + std::to_string(surf->getHeight());
-		output += " x: " + std::to_string(surf->getX()) + " y: " + std::to_string(surf->getY());
-		return output;
-	}
-	else
-	{
-		return "null";
-	}
-}
-
 /**
  * @brief Custom method for retrieving a sprite by set for scripting.
  * @param surface The surface the sprite is loaded into. nullptr on error.
@@ -6448,26 +6384,10 @@ void Mod::ScriptRegister(ScriptParserBase *parser)
 		parser->registerRawPointerType<Surface>(name);
 		Bind<Surface> surfaceBinder = {parser, name};
 
-		surfaceBinder.addCustomConst("INV_SLOT_W", RuleInventory::SLOT_W);
-		surfaceBinder.addCustomConst("INV_SLOT_H", RuleInventory::SLOT_H);
-		surfaceBinder.addCustomConst("INV_HAND_SLOT_COUNT_W", RuleInventory::HAND_W);
-		surfaceBinder.addCustomConst("INV_HAND_SLOT_COUNT_H", RuleInventory::HAND_H);
-
-		surfaceBinder.add<&blitSpriteScript>("blit", "Blits a sprite ontop of another sprite.");
-		surfaceBinder.add<&blitNShadeSpriteScript>("blitShade", "Blits and shades a sprite onto another sprite.");
-		surfaceBinder.add<&blitNShadeNRecolorSpriteScript>("blitShadeRecolor", "Blits, shades, and recolors a sprite onto another sprite.");
-
-		surfaceBinder.add<&drawTextScript>("drawText", "Draws text on a sprite.");
-		surfaceBinder.add<&drawNumberScript>("drawNumber", "Draws number on a sprite. (number width height x y color)");
-
-		surfaceBinder.add<&drawLineScript>("drawLine", "Draws a line on a sprite. (x1 y1 x2 y2 color)");
-		surfaceBinder.add<&drawRectScript>("drawRect", "Draws a rectange on a sprite. (x1 y1 x2 y2 color)");
-		surfaceBinder.add<&drawCircScript>("drawCirc", "Draws a circle on a sprite. (x y radius color)");
-
 		surfaceBinder.add<&Surface::getWidth>("getWidth", "Get's the width of the sprite. (width)");
 		surfaceBinder.add<&Surface::getHeight>("getHeight", "Get's the width of the sprite. (height)");
 
-		surfaceBinder.addDebugDisplay<&debugDisplayScript>();
+//		surfaceBinder.addDebugDisplay<&debugDisplayScript>();
 	}
 
 	Bind<Mod> mod = { parser };

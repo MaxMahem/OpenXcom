@@ -1745,25 +1745,10 @@ int RuleItem::getSpecialChance() const
  * @param texture Pointer to the surface set to get the sprite from.
  * @param surface Pointer to the surface to draw to.
  */
-void RuleItem::drawHandSprite(const SurfaceSet *texture, Surface *surface, const BattleItem *item, const SavedBattleGame *save, int animFrame) const
+void RuleItem::drawHandSprite(const SurfaceSet *texture, Surface *surface) const
 {
-	//TODO: split this function to one using only `this` and another using only `item`
-	const Surface *frame = nullptr;
-	if (item)
-	{
-		frame = item->getBigSprite(texture, save, animFrame);
-		if (frame)
-		{
-			ScriptWorkerBlit scr;
-			BattleItem::ScriptFill(&scr, item, save, BODYPART_ITEM_INVENTORY, animFrame, 0);
-			scr.executeBlit(frame, surface, this->getHandSpriteOffX(), this->getHandSpriteOffY(), 0);
-		}
-	}
-	else
-	{
-		frame = texture->getFrame(this->getBigSprite());
-		frame->blitNShade(surface, this->getHandSpriteOffX(), this->getHandSpriteOffY());
-	}
+	const Surface* frame = texture->getFrame(this->getBigSprite());
+	frame->blitNShade(surface, this->getHandSpriteOffX(), this->getHandSpriteOffY());
 }
 
 /**
@@ -2857,8 +2842,10 @@ void RuleItem::ScriptRegister(ScriptParserBase* parser)
 
 	ri.add<&RuleItem::getArmor>("getArmorValue");
 	ri.add<&RuleItem::getWeight>("getWeight");
+	ri.add<&RuleItem::getClipSize>("getClipSize");
 	ri.add<&RuleItem::getInventoryWidth>("getInvWidth", "Gets an items inventory width.");
 	ri.add<&RuleItem::getInventoryHeight>("getInvHeight", "Gets an items inventory height.");
+	ri.add<&RuleItem::getBigSprite>("getBigSpriteIndex", "Gets the index of the BIGOBS sprite used to display this item.");
 	ri.add<&getBattleTypeScript>("getBattleType");
 	ri.add<&RuleItem::getWaypoints>("getWaypoints");
 	ri.add<&RuleItem::isWaterOnly>("isWaterOnly");

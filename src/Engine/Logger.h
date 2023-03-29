@@ -59,7 +59,26 @@ public:
 	 ~Logger() { CrossPlatform::log(_level, _message); };
 
 	/// Return access to the ostringstream for logging.
-	std::ostringstream& get(SeverityLevel level = LOG_INFO) { _level = level; return _message; };
+	std::ostringstream& get(SeverityLevel level = LOG_INFO)
+	{
+		_level = level;
+		return _message;
+	};
+
+	/// Return access to the ostringstream for logging.
+	std::ostringstream& get(std::string key, SeverityLevel level = LOG_INFO)
+	{
+		_level = level;
+		_seenMessages.insert(key);
+		return _message;
+	};
+
+	/// Determines if this message is a unique message or not.
+	/// TODO: switch to contains in C++20.
+	static bool isUnquieMessage(const std::string& key) { return _seenMessages.count(key) == 0; } 
+
+	/// Resets seen messages. Call after restart.
+	static void resetSeenMessages() { _seenMessages.clear(); }
 
 	/// Set the logging level.
 	static SeverityLevel& reportingLevel() {
@@ -72,49 +91,15 @@ public:
 		static const std::string buffer[] = { "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "VERB", "ALL" };
 		return buffer[level];
 	};
+
 private:
 	SeverityLevel _level;
 	std::ostringstream _message;
-};
-
-/**
- * @brief Variation of the logging class that logs a message only once, as determined by a unique key.
- */
-class LoggerOnce
-{
- public:
-	/// Construct a new instance.
-	LoggerOnce() : _level(LOG_INFO){};
-
-	// No copy or moves.
-	LoggerOnce(const LoggerOnce&) = delete;
-	LoggerOnce& operator=(const LoggerOnce&) = delete;
-
-	/// When this class is destroyed, logging happens, but only if the message is unique.
-	~LoggerOnce()
-	{
-		if (_uniqueMessage)
-		{
-			CrossPlatform::log(_level, _os);
-		}
-	};
-
-	/// Return access to the ostringstream for logging.
-	std::ostringstream& get(std::string key, SeverityLevel level = LOG_INFO)
-	{
-		_level = level;
-		_uniqueMessage = _seenMessages.insert(key).second;
-		return _os;
-	};
-
- private:
-	SeverityLevel _level;
-	std::ostringstream _os;
 	inline static std::unordered_set<std::string> _seenMessages{};
-	bool _uniqueMessage = false;
 };
 
+// these macros return an ostringstream to write log messages to. When the object passes out of scope, it is destroyed and the message is logged.
 #define Log(level)          if (level > Logger::reportingLevel()) { } else Logger().get(level)
-#define LogOnce(level, key) if (level > Logger::reportingLevel()) { } else LoggerOnce().get(key, level)
+#define LogOnce(key, level) if (level > Logger::reportingLevel() || Logger::isUnquieMessage(key)) { } else Logger().get(key, level)
 
 }

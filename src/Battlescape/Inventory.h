@@ -31,6 +31,7 @@ class WarningMessage;
 class BattleItem;
 class BattleUnit;
 class NumberText;
+class SurfaceSet;
 class Timer;
 
 /**
@@ -44,6 +45,8 @@ private:
 	Surface *_grid, *_items, *_gridLabels;
 	/// surface for the currently select item, if any. Equal in size to a hand-slot.
 	Surface *_selection;
+	/// Surface set containing big objects (inventory sprite pictures).
+	SurfaceSet* _bigObs = nullptr;
 
 	WarningMessage *_warning;
 	BattleUnit *_selUnit;
